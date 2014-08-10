@@ -3,9 +3,9 @@
 from django.test import TestCase, LiveServerTestCase, Client
 from django.utils import timezone
 from blog.models import Post
+from django.template.defaultfilters import date as _date
 
-
-class PostTeste(TestCase):
+class PostTest(TestCase):
     def teste_cria_post(self):
         # cria o post
         post = Post()
@@ -171,3 +171,34 @@ class AdminTest(LiveServerTestCase):
         # Check post amended
         todos_os_posts = Post.objects.all()
         self.assertEquals(len(todos_os_posts), 0)
+
+class PostViewTest(LiveServerTestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_index(self):
+        # Create the post
+        post = Post()
+        post.titulo = 'My first post'
+        post.texto = 'This is my first blog post'
+        post.pub_data = timezone.now()
+        post.save()
+
+        # Check new post saved
+        todos_os_posts = Post.objects.all()
+        self.assertEquals(len(todos_os_posts), 1)
+
+        # Fetch the index
+        response = self.client.get('/')
+        self.assertEquals(response.status_code, 200)
+
+        # Check the post title is in the response
+        self.assertTrue(post.titulo in response.content)
+
+        # Check the post text is in the response
+        self.assertTrue(post.texto in response.content)
+
+        # Check the post date is in the response
+        self.assertTrue(str(post.pub_data.year) in response.content)
+        self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
+        self.assertTrue(str(post.pub_data.day) in response.content)
