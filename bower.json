@@ -1,0 +1,32 @@
+{
+  "name": "xbeta",
+  "version": "0.0.0",
+  "authors": [
+    "adamiani <athos.damiani@gmail.com>"
+  ],
+  "description": "Site da X Beta",
+  "moduleType": [
+    "node"
+  ],
+  "keywords": [
+    "blog",
+    "estatística",
+    "estat",
+    "consultoria",
+    "statistics"
+  ],
+  "license": "MIT",
+  "homepage": "www.xbeta.com.br",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.2.0",
+    "html5-boilerplate": "~4.3.0"
+  }
+}
