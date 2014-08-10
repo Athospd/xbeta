@@ -1,4 +1,6 @@
-{% extends "blogengine/includes/base.html" %}
+{% extends "blog/includes/base.html" %}
+
+    {% load custom_markdown %}
 
     {% block content %}
         {% for post in object_list %}

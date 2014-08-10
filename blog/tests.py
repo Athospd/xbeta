@@ -4,6 +4,7 @@ from django.test import TestCase, LiveServerTestCase, Client
 from django.utils import timezone
 from blog.models import Post
 from django.template.defaultfilters import date as _date
+import markdown
 
 class PostTest(TestCase):
     def teste_cria_post(self):
@@ -202,3 +203,6 @@ class PostViewTest(LiveServerTestCase):
         self.assertTrue(str(post.pub_data.year) in response.content)
         self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
         self.assertTrue(str(post.pub_data.day) in response.content)
+
+        # Check the link is marked up properly
+        self.assertTrue('<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
