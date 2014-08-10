@@ -5,9 +5,17 @@
     {% block content %}
         {% for post in object_list %}
         <div class="post">
-        <h1>{{ post.title }}</h1>
-        <h3>{{ post.pub_date }}</h3>
-        {{ post.text }}
+        <h1>{{ post.titulo }}</h1>
+        <h3>{{ post.pub_data }}</h3>
+        {{ post.texto|custom_markdown }}
         </div>
         {% endfor %}
+
+        {% if page_obj.has_previous %}
+        <a href="/{{ page_obj.previous_page_number }}/">Anterior</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+        <a href="/{{ page_obj.next_page_number }}/">Próxima</a>
+        {% endif %}
+
     {% endblock %}
