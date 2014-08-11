@@ -12,6 +12,7 @@ class PostTest(TestCase):
         post = Post()
         post.titulo = 'Meu primeiro post'
         post.texto = 'Este é meu primeiro post do blog'
+        post.slug = "my-first-post"
         post.pub_data = timezone.now()
 
         # salva o post no banco de dados
@@ -25,6 +26,7 @@ class PostTest(TestCase):
         # verifica os atributos
         self.assertEqual(um_post.titulo, 'Meu primeiro post')
         self.assertEqual(um_post.texto, u'Este é meu primeiro post do blog')
+        self.assertEqual(um_post.slug, 'my-first-post')
         self.assertEqual(um_post.pub_data.day, post.pub_data.day)
         self.assertEqual(um_post.pub_data.month, post.pub_data.month)
         self.assertEqual(um_post.pub_data.year, post.pub_data.year)
@@ -87,20 +89,13 @@ class AdminTest(LiveServerTestCase):
         response = self.client.get('/admin/blog/post/add/')
         self.assertEquals(response.status_code, 200)
 
-    def test_create_post(self):
-        # Log in
-        self.client.login(username='teste2', password="teste2")
-
-        # Check response code
-        response = self.client.get('/admin/blog/post/add/')
-        self.assertEquals(response.status_code, 200)
-
         # Create the new post
         response = self.client.post('/admin/blog/post/add/', {
             'titulo': 'My first post',
             'texto': 'This is my first post',
             'pub_data_0': '2013-12-28',
-            'pub_data_1': '22:00:04'
+            'pub_data_1': '22:00:04',
+            'slug': 'my-first-post'
         },
         follow=True
         )
@@ -118,6 +113,7 @@ class AdminTest(LiveServerTestCase):
         post = Post()
         post.titulo = 'My first post'
         post.texto = 'This is my first blog post'
+        post.slug = 'my-first-post'
         post.pub_data = timezone.now()
         post.save()
 
@@ -129,7 +125,8 @@ class AdminTest(LiveServerTestCase):
             'titulo': 'My second post',
             'texto': 'This is my second blog post',
             'pub_data_0': '2013-12-28',
-            'pub_data_1': '22:00:04'
+            'pub_data_1': '22:00:04',
+            'slug': 'my-second-post'
         },
         follow=True
         )
@@ -150,6 +147,7 @@ class AdminTest(LiveServerTestCase):
         post = Post()
         post.titulo = 'My first post'
         post.texto = 'This is my first blog post'
+        post.slug = 'my-first-post'
         post.pub_data = timezone.now()
         post.save()
 
@@ -181,7 +179,8 @@ class PostViewTest(LiveServerTestCase):
         # Create the post
         post = Post()
         post.titulo = 'My first post'
-        post.texto = 'This is my first blog post'
+        post.texto = 'This is [my first blog post](http://127.0.0.1:8000/)'
+        post.slug = 'my-first-post'
         post.pub_data = timezone.now()
         post.save()
 
@@ -202,6 +201,42 @@ class PostViewTest(LiveServerTestCase):
         # Check the post date is in the response
         self.assertTrue(str(post.pub_data.year) in response.content)
         self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
+        self.assertTrue(str(post.pub_data.day) in response.content)
+
+        # Check the link is marked up properly
+        self.assertTrue('<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
+
+    def test_post_page(self):
+        # Create the post
+        post = Post()
+        post.titulo = 'My first post'
+        post.texto = 'This is [my first blog post](http://127.0.0.1:8000/)'
+        post.slug = 'my-first-post'
+        post.pub_data = timezone.now()
+        post.save()
+
+        # Check new post saved
+        todos_os_posts = Post.objects.all()
+        self.assertEquals(len(todos_os_posts), 1)
+        um_post = todos_os_posts[0]
+        self.assertEquals(um_post, post)
+
+        # Get the post URL
+        post_url = um_post.get_absolute_url()
+
+        # Fetch the post
+        response = self.client.get(post_url)
+        self.assertEquals(response.status_code, 200)
+
+        # Check the post title is in the response
+        self.assertTrue(post.titulo in response.content)
+
+        # Check the post text is in the response
+        self.assertTrue(markdown.markdown(post.texto) in response.content)
+
+        # Check the post date is in the response
+        self.assertTrue(str(post.pub_data.year) in response.content)
+        self.assertTrue(post.pub_data.strftime('%b') in response.content)
         self.assertTrue(str(post.pub_data.day) in response.content)
 
         # Check the link is marked up properly
