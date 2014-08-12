@@ -4,6 +4,8 @@ from django.test import TestCase, LiveServerTestCase, Client
 from django.utils import timezone
 from blog.models import Post
 from django.template.defaultfilters import date as _date
+from django.contrib.flatpages.models import FlatPage
+from django.contrib.sites.models import Site
 import markdown
 
 class PostTest(TestCase):
@@ -34,11 +36,12 @@ class PostTest(TestCase):
         self.assertEqual(um_post.pub_data.minute, post.pub_data.minute)
         self.assertEqual(um_post.pub_data.second, post.pub_data.second)
 
-class AdminTest(LiveServerTestCase):
-    fixtures = ['users.json']
-
+class BaseAcceptanceTest(LiveServerTestCase):
     def setUp(self):
         self.client = Client()
+
+class AdminTest(BaseAcceptanceTest):
+    fixtures = ['users.json']
 
     def test_login(self):
         # Get login page
@@ -171,9 +174,7 @@ class AdminTest(LiveServerTestCase):
         todos_os_posts = Post.objects.all()
         self.assertEquals(len(todos_os_posts), 0)
 
-class PostViewTest(LiveServerTestCase):
-    def setUp(self):
-        self.client = Client()
+class PostViewTest(BaseAcceptanceTest):
 
     def test_index(self):
         # Create the post
@@ -194,9 +195,6 @@ class PostViewTest(LiveServerTestCase):
 
         # Check the post title is in the response
         self.assertTrue(post.titulo in response.content)
-
-        # Check the post text is in the response
-        self.assertTrue(post.texto in response.content)
 
         # Check the post date is in the response
         self.assertTrue(str(post.pub_data.year) in response.content)
@@ -232,11 +230,11 @@ class PostViewTest(LiveServerTestCase):
         self.assertTrue(post.titulo in response.content)
 
         # Check the post text is in the response
-        self.assertTrue(markdown.markdown(post.texto) in response.content)
+        self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
 
         # Check the post date is in the response
         self.assertTrue(str(post.pub_data.year) in response.content)
-        self.assertTrue(post.pub_data.strftime('%b') in response.content)
+        self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
         self.assertTrue(str(post.pub_data.day) in response.content)
 
         # Check the link is marked up properly

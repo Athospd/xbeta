@@ -1,0 +1,12 @@
+{% extends "blog/includes/base.html" %}
+
+    {% load custom_markdown %}
+
+    {% block content %}
+        <div class="post">
+        <h1>{{ object.titulo }}</h1>
+        <h3>{{ object.pub_data }}</h3>
+        {{ object.texto|custom_markdown }}
+        </div>
+
+{% endblock %}
