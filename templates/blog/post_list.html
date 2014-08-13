@@ -9,6 +9,7 @@
         <h3>{{ post.pub_data }}</h3>
         {{ post.texto|custom_markdown }}
         </div>
+        <a href="{{ post.category.get_absolute_url }}">{{ post.category.name }}</a>
         {% endfor %}
 
         {% if page_obj.has_previous %}

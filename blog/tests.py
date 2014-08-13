@@ -361,6 +361,9 @@ class PostViewTest(BaseAcceptanceTest):
         # Check the post title is in the response
         self.assertTrue(post.titulo in response.content)
 
+        # Check the post category is in the response
+        self.assertTrue(post.category.name in response.content)
+
         # Check the post date is in the response
         self.assertTrue(str(post.pub_data.year) in response.content)
         self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
@@ -413,6 +416,9 @@ class PostViewTest(BaseAcceptanceTest):
         # Check the post title is in the response
         self.assertTrue(post.titulo in response.content)
 
+        # Check the post category is in the response
+        self.assertTrue(post.category.name in response.content)
+
         # Check the post text is in the response
         self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
 
@@ -424,37 +430,92 @@ class PostViewTest(BaseAcceptanceTest):
         # Check the link is marked up properly
         self.assertTrue('<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
 
-    class FlatPageViewTest(BaseAcceptanceTest):
-        def test_create_flat_page(self):
-            # Create flat page
-            page = FlatPage()
-            page.url = '/about/'
-            page.title = 'About me'
-            page.content = 'All about me'
-            page.save()
+    def test_category_page(self):
+        # Create the category
+        category = Category()
+        category.name = 'python'
+        category.description = 'The Python programming language'
+        category.save()
 
-            # Add the site
-            page.sites.add(Site.objects.all()[0])
-            page.save()
+        # Create the author
+        author = User.objects.create_user('testuser', 'user@example.com', 'password')
+        author.save()
 
-            # Check new page saved
-            all_pages = FlatPage.objects.all()
-            self.assertEquals(len(all_pages), 1)
-            only_page = all_pages[0]
-            self.assertEquals(only_page, page)
+        # Create the site
+        site = Site()
+        site.name = 'example.com'
+        site.domain = 'example.com'
+        site.save()
 
-            # Check data correct
-            self.assertEquals(only_page.url, '/about/')
-            self.assertEquals(only_page.title, 'About me')
-            self.assertEquals(only_page.content, 'All about me')
+        # Create the post
+        post = Post()
+        post.titulo = 'My first post'
+        post.texto = 'This is [my first blog post](http://127.0.0.1:8000/)'
+        post.slug = 'my-first-post'
+        post.pub_data = timezone.now()
+        post.author = author
+        post.site = site
+        post.category = category
+        post.save()
 
-            # Get URL
-            page_url = only_page.get_absolute_url()
+        # Check new post saved
+        all_posts = Post.objects.all()
+        self.assertEquals(len(all_posts), 1)
+        only_post = all_posts[0]
+        self.assertEquals(only_post, post)
 
-            # Get the page
-            response = self.client.get(page_url)
-            self.assertEquals(response.status_code, 200)
+        # Get the category URL
+        category_url = post.category.get_absolute_url()
 
-            # Check title and content in response
-            self.assertTrue('About me' in response.content)
-            self.assertTrue('All about me' in response.content)
+        # Fetch the category
+        response = self.client.get(category_url)
+        self.assertEquals(response.status_code, 200)
+
+        # Check the category name is in the response
+        self.assertTrue(post.category.name in response.content)
+
+        # Check the post text is in the response
+        self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
+
+        # Check the post date is in the response
+        self.assertTrue(str(post.pub_data.year) in response.content)
+        self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
+        self.assertTrue(str(post.pub_data.day) in response.content)
+
+        # Check the link is marked up properly
+        self.assertTrue('<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
+
+class FlatPageViewTest(BaseAcceptanceTest):
+    def test_create_flat_page(self):
+        # Create flat page
+        page = FlatPage()
+        page.url = '/about/'
+        page.title = 'About me'
+        page.content = 'All about me'
+        page.save()
+
+        # Add the site
+        page.sites.add(Site.objects.all()[0])
+        page.save()
+
+        # Check new page saved
+        all_pages = FlatPage.objects.all()
+        self.assertEquals(len(all_pages), 1)
+        only_page = all_pages[0]
+        self.assertEquals(only_page, page)
+
+        # Check data correct
+        self.assertEquals(only_page.url, '/about/')
+        self.assertEquals(only_page.title, 'About me')
+        self.assertEquals(only_page.content, 'All about me')
+
+        # Get URL
+        page_url = only_page.get_absolute_url()
+
+        # Get the page
+        response = self.client.get(page_url)
+        self.assertEquals(response.status_code, 200)
+
+        # Check title and content in response
+        self.assertTrue('About me' in response.content)
+        self.assertTrue('All about me' in response.content)

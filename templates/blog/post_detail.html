@@ -8,6 +8,7 @@
         <h3>{{ object.pub_data }}</h3>
         {{ object.texto|custom_markdown }}
         </div>
+        <a href="{{ object.category.get_absolute_url }}">{{ object.category.name }}</a>
 
         <h4>Comentários</h4>
         <div class="fb-comments" data-href="http://{{ post.site }}{{ post.get_absolute_url }}" data-width="470" data-num-posts="10"></div>
