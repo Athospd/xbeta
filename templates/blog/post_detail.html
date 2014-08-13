@@ -9,4 +9,7 @@
         {{ object.texto|custom_markdown }}
         </div>
 
+        <h4>Comentários</h4>
+        <div class="fb-comments" data-href="http://{{ post.site }}{{ post.get_absolute_url }}" data-width="470" data-num-posts="10"></div>
+
 {% endblock %}
