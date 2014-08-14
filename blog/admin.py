@@ -2,7 +2,7 @@ from django.contrib import admin
 import models
 
 class PostAdmin(admin.ModelAdmin):
-    prepopulated_fields = {"slug": ("titulo",)}
+    prepopulated_fields = {"slug": ("title",)}
     exclude = ('author',)
 
     def save_model(self, request, obj, form, change):

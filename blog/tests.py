@@ -9,6 +9,7 @@ from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 import markdown
+import feedparser
 
 class PostTest(TestCase):
     def test_create_tag(self):
@@ -78,10 +79,10 @@ class PostTest(TestCase):
 
         # cria o post
         post = Post()
-        post.titulo = 'Meu primeiro post'
-        post.texto = 'Este é meu primeiro post do blog'
+        post.title = 'Meu primeiro post'
+        post.text = 'Este é meu primeiro post do blog'
         post.slug = "my-first-post"
-        post.pub_data = timezone.now()
+        post.pub_date = timezone.now()
         post.author = author
         post.site = site
         post.category = category
@@ -94,30 +95,30 @@ class PostTest(TestCase):
         post.save()
 
         # verifica se conseguimos encontrá-lo
-        todos_os_posts = Post.objects.all()
-        self.assertEquals(len(todos_os_posts), 1)
-        um_post = todos_os_posts[0]
-        self.assertEqual(um_post, post)
+        all_posts = Post.objects.all()
+        self.assertEquals(len(all_posts), 1)
+        only_post = all_posts[0]
+        self.assertEqual(only_post, post)
 
         # verifica os atributos
-        self.assertEqual(um_post.titulo, 'Meu primeiro post')
-        self.assertEqual(um_post.texto, u'Este é meu primeiro post do blog')
-        self.assertEqual(um_post.slug, 'my-first-post')
-        self.assertEquals(um_post.site.name, 'example.com')
-        self.assertEquals(um_post.site.domain, 'example.com')
-        self.assertEqual(um_post.pub_data.day, post.pub_data.day)
-        self.assertEqual(um_post.pub_data.month, post.pub_data.month)
-        self.assertEqual(um_post.pub_data.year, post.pub_data.year)
-        self.assertEqual(um_post.pub_data.hour, post.pub_data.hour)
-        self.assertEqual(um_post.pub_data.minute, post.pub_data.minute)
-        self.assertEqual(um_post.pub_data.second, post.pub_data.second)
-        self.assertEquals(um_post.author.username, 'testuser')
-        self.assertEquals(um_post.author.email, 'user@example.com')
-        self.assertEquals(um_post.category.name, 'python')
-        self.assertEquals(um_post.category.description, 'The Python programming language')
+        self.assertEqual(only_post.title, 'Meu primeiro post')
+        self.assertEqual(only_post.text, u'Este é meu primeiro post do blog')
+        self.assertEqual(only_post.slug, 'my-first-post')
+        self.assertEquals(only_post.site.name, 'example.com')
+        self.assertEquals(only_post.site.domain, 'example.com')
+        self.assertEqual(only_post.pub_date.day, post.pub_date.day)
+        self.assertEqual(only_post.pub_date.month, post.pub_date.month)
+        self.assertEqual(only_post.pub_date.year, post.pub_date.year)
+        self.assertEqual(only_post.pub_date.hour, post.pub_date.hour)
+        self.assertEqual(only_post.pub_date.minute, post.pub_date.minute)
+        self.assertEqual(only_post.pub_date.second, post.pub_date.second)
+        self.assertEquals(only_post.author.username, 'testuser')
+        self.assertEquals(only_post.author.email, 'user@example.com')
+        self.assertEquals(only_post.category.name, 'python')
+        self.assertEquals(only_post.category.description, 'The Python programming language')
 
         # Check tags
-        post_tags = um_post.tags.all()
+        post_tags = only_post.tags.all()
         self.assertEquals(len(post_tags), 1)
         only_post_tag = post_tags[0]
         self.assertEquals(only_post_tag, tag)
@@ -341,10 +342,10 @@ class AdminTest(BaseAcceptanceTest):
 
         # Create the new post
         response = self.client.post('/admin/blog/post/add/', {
-            'titulo': 'My first post',
-            'texto': 'This is my first post',
-            'pub_data_0': '2013-12-28',
-            'pub_data_1': '22:00:04',
+            'title': 'My first post',
+            'text': 'This is my first post',
+            'pub_date_0': '2013-12-28',
+            'pub_date_1': '22:00:04',
             'slug': 'my-first-post',
             'site': '1',
             'category': '1',
@@ -386,10 +387,10 @@ class AdminTest(BaseAcceptanceTest):
 
         # Create the post
         post = Post()
-        post.titulo = 'My first post'
-        post.texto = 'This is my first blog post'
+        post.title = 'My first post'
+        post.text = 'This is my first blog post'
         post.slug = 'my-first-post'
-        post.pub_data = timezone.now()
+        post.pub_date = timezone.now()
         post.author = author
         post.site = site
         post.save()
@@ -401,10 +402,10 @@ class AdminTest(BaseAcceptanceTest):
 
         # Edit the post
         response = self.client.post('/admin/blog/post/1/', {
-            'titulo': 'My second post',
-            'texto': 'This is my second blog post',
-            'pub_data_0': '2013-12-28',
-            'pub_data_1': '22:00:04',
+            'title': 'My second post',
+            'text': 'This is my second blog post',
+            'pub_date_0': '2013-12-28',
+            'pub_date_1': '22:00:04',
             'slug': 'my-second-post',
             'site': '1',
             'category': '1',
@@ -418,11 +419,11 @@ class AdminTest(BaseAcceptanceTest):
         self.assertTrue('modificado com sucesso' in response.content)
 
         # Check post amended
-        todos_os_posts = Post.objects.all()
-        self.assertGreater(len(todos_os_posts), 0)
-        um_post = todos_os_posts[0]
-        self.assertEquals(um_post.titulo, 'My second post')
-        self.assertEquals(um_post.texto, 'This is my second blog post')
+        all_posts = Post.objects.all()
+        self.assertGreater(len(all_posts), 0)
+        only_post = all_posts[0]
+        self.assertEquals(only_post.title, 'My second post')
+        self.assertEquals(only_post.text, 'This is my second blog post')
 
     def test_delete_post(self):
         # Create the category
@@ -449,10 +450,10 @@ class AdminTest(BaseAcceptanceTest):
 
         # Create the post
         post = Post()
-        post.titulo = 'My first post'
-        post.texto = 'This is my first blog post'
+        post.title = 'My first post'
+        post.text = 'This is my first blog post'
         post.slug = 'my-first-post'
-        post.pub_data = timezone.now()
+        post.pub_date = timezone.now()
         post.site = site
         post.author = author
         post.save()
@@ -460,8 +461,8 @@ class AdminTest(BaseAcceptanceTest):
         post.save()
 
         # Check new post saved
-        todos_os_posts = Post.objects.all()
-        self.assertGreater(len(todos_os_posts), 0)
+        all_posts = Post.objects.all()
+        self.assertGreater(len(all_posts), 0)
 
         # Log in
         self.client.login(username='teste2', password="teste2")
@@ -476,8 +477,8 @@ class AdminTest(BaseAcceptanceTest):
         self.assertTrue('excluído com sucesso' in response.content)
 
         # Check post amended
-        todos_os_posts = Post.objects.all()
-        self.assertEquals(len(todos_os_posts), 0)
+        all_posts = Post.objects.all()
+        self.assertEquals(len(all_posts), 0)
 
 class PostViewTest(BaseAcceptanceTest):
     def test_index(self):
@@ -505,10 +506,10 @@ class PostViewTest(BaseAcceptanceTest):
 
         # Create the post
         post = Post()
-        post.titulo = 'My first post'
-        post.texto = 'This is [my first blog post](http://127.0.0.1:8000/)'
+        post.title = 'My first post'
+        post.text = 'This is [my first blog post](http://127.0.0.1:8000/)'
         post.slug = 'my-first-post'
-        post.pub_data = timezone.now()
+        post.pub_date = timezone.now()
         post.author = author
         post.site = site
         post.category = category
@@ -517,30 +518,30 @@ class PostViewTest(BaseAcceptanceTest):
         post.save()
 
         # Check new post saved
-        todos_os_posts = Post.objects.all()
-        self.assertEquals(len(todos_os_posts), 1)
+        all_posts = Post.objects.all()
+        self.assertEquals(len(all_posts), 1)
 
         # Fetch the index
         response = self.client.get('/')
         self.assertEquals(response.status_code, 200)
 
         # Check the post title is in the response
-        self.assertTrue(post.titulo in response.content)
+        self.assertTrue(post.title in response.content)
 
         # Check the post text is in the response
-        self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
+        self.assertTrue(markdown.markdown(post.text).encode() in response.content)
 
         # Check the post category is in the response
         self.assertTrue(post.category.name in response.content)
 
         # Check the post tag is in the response
-        post_tag = todos_os_posts[0].tags.all()[0]
+        post_tag = all_posts[0].tags.all()[0]
         self.assertTrue(post_tag.name.encode() in response.content)
 
         # Check the post date is in the response
-        self.assertTrue(str(post.pub_data.year) in response.content)
-        self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
-        self.assertTrue(str(post.pub_data.day) in response.content)
+        self.assertTrue(str(post.pub_date.year) in response.content)
+        self.assertTrue(_date(post.pub_date, "F").encode('utf-8') in response.content)
+        self.assertTrue(str(post.pub_date.day) in response.content)
 
         # Check the link is marked up properly
         self.assertTrue('<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
@@ -570,10 +571,10 @@ class PostViewTest(BaseAcceptanceTest):
 
         # Create the post
         post = Post()
-        post.titulo = 'My first post'
-        post.texto = 'This is [my first blog post](http://127.0.0.1:8000/)'
+        post.title = 'My first post'
+        post.text = 'This is [my first blog post](http://127.0.0.1:8000/)'
         post.slug = 'my-first-post'
-        post.pub_data = timezone.now()
+        post.pub_date = timezone.now()
         post.author = author
         post.site = site
         post.category = category
@@ -582,35 +583,35 @@ class PostViewTest(BaseAcceptanceTest):
         post.save()
 
         # Check new post saved
-        todos_os_posts = Post.objects.all()
-        self.assertEquals(len(todos_os_posts), 1)
-        um_post = todos_os_posts[0]
-        self.assertEquals(um_post, post)
+        all_posts = Post.objects.all()
+        self.assertEquals(len(all_posts), 1)
+        only_post = all_posts[0]
+        self.assertEquals(only_post, post)
 
         # Get the post URL
-        post_url = um_post.get_absolute_url()
+        post_url = only_post.get_absolute_url()
 
         # Fetch the post
         response = self.client.get(post_url)
         self.assertEquals(response.status_code, 200)
 
         # Check the post title is in the response
-        self.assertTrue(post.titulo in response.content)
+        self.assertTrue(post.title in response.content)
 
         # Check the post category is in the response
         self.assertTrue(post.category.name in response.content)
 
         # Check the post tag is in the response
-        post_tag = todos_os_posts[0].tags.all()[0]
+        post_tag = all_posts[0].tags.all()[0]
         self.assertTrue(post_tag.name.encode() in response.content)
 
         # Check the post text is in the response
-        self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
+        self.assertTrue(markdown.markdown(post.text).encode() in response.content)
 
         # Check the post date is in the response
-        self.assertTrue(str(post.pub_data.year) in response.content)
-        self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
-        self.assertTrue(str(post.pub_data.day) in response.content)
+        self.assertTrue(str(post.pub_date.year) in response.content)
+        self.assertTrue(_date(post.pub_date, "F").encode('utf-8') in response.content)
+        self.assertTrue(str(post.pub_date.day) in response.content)
 
         # Check the link is marked up properly
         self.assertTrue('<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
@@ -634,10 +635,10 @@ class PostViewTest(BaseAcceptanceTest):
 
         # Create the post
         post = Post()
-        post.titulo = 'My first post'
-        post.texto = 'This is [my first blog post](http://127.0.0.1:8000/)'
+        post.title = 'My first post'
+        post.text = 'This is [my first blog post](http://127.0.0.1:8000/)'
         post.slug = 'my-first-post'
-        post.pub_data = timezone.now()
+        post.pub_date = timezone.now()
         post.author = author
         post.site = site
         post.category = category
@@ -660,12 +661,12 @@ class PostViewTest(BaseAcceptanceTest):
         self.assertTrue(post.category.name in response.content)
 
         # Check the post text is in the response
-        self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
+        self.assertTrue(markdown.markdown(post.text).encode() in response.content)
 
         # Check the post date is in the response
-        self.assertTrue(str(post.pub_data.year) in response.content)
-        self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
-        self.assertTrue(str(post.pub_data.day) in response.content)
+        self.assertTrue(str(post.pub_date.year) in response.content)
+        self.assertTrue(_date(post.pub_date, "F").encode('utf-8') in response.content)
+        self.assertTrue(str(post.pub_date.day) in response.content)
 
         # Check the link is marked up properly
         self.assertTrue('<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
@@ -689,10 +690,10 @@ class PostViewTest(BaseAcceptanceTest):
 
         # Create the post
         post = Post()
-        post.titulo = 'My first post'
-        post.texto = 'This is [my first blog post](http://127.0.0.1:8000/)'
+        post.title = 'My first post'
+        post.text = 'This is [my first blog post](http://127.0.0.1:8000/)'
         post.slug = 'my-first-post'
-        post.pub_data = timezone.now()
+        post.pub_date = timezone.now()
         post.author = author
         post.site = site
         post.save()
@@ -716,12 +717,12 @@ class PostViewTest(BaseAcceptanceTest):
         self.assertTrue(post.tags.all()[0].name.encode() in response.content)
 
         # Check the post text is in the response
-        self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
+        self.assertTrue(markdown.markdown(post.text).encode() in response.content)
 
         # Check the post date is in the response
-        self.assertTrue(str(post.pub_data.year) in response.content)
-        self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
-        self.assertTrue(str(post.pub_data.day) in response.content)
+        self.assertTrue(str(post.pub_date.year) in response.content)
+        self.assertTrue(_date(post.pub_date, "F").encode('utf-8') in response.content)
+        self.assertTrue(str(post.pub_date.day) in response.content)
 
         # Check the link is marked up properly
         self.assertTrue('<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
@@ -760,3 +761,65 @@ class FlatPageViewTest(BaseAcceptanceTest):
         # Check title and content in response
         self.assertTrue('About me' in response.content)
         self.assertTrue('All about me' in response.content)
+
+class FeedTest(BaseAcceptanceTest):
+    def test_all_post_feed(self):
+        # Create the category
+        category = Category()
+        category.name = 'python'
+        category.description = 'The Python programming language'
+        category.save()
+
+        # Create the tag
+        tag = Tag()
+        tag.name = 'python'
+        tag.description = 'The Python programming language'
+        tag.save()
+
+        # Create the author
+        author = User.objects.create_user('testuser', 'user@example.com', 'password')
+        author.save()
+
+        # Create the site
+        site = Site()
+        site.name = 'example.com'
+        site.domain = 'example.com'
+        site.save()
+
+        # Create a post
+        post = Post()
+        post.title = 'My first post'
+        post.text = 'This is my first blog post'
+        post.slug = 'my-first-post'
+        post.pub_date = timezone.now()
+        post.author = author
+        post.site = site
+        post.category = category
+
+        # Save it
+        post.save()
+
+        # Add the tag
+        post.tags.add(tag)
+        post.save()
+
+        # Check we can find it
+        all_posts = Post.objects.all()
+        self.assertEquals(len(all_posts), 1)
+        only_post = all_posts[0]
+        self.assertEquals(only_post, post)
+
+        # Fetch the feed
+        response = self.client.get('/feeds/posts/')
+        self.assertEquals(response.status_code, 200)
+
+        # Parse the feed
+        feed = feedparser.parse(response.content)
+
+        # Check length
+        self.assertEquals(len(feed.entries), 1)
+
+        # Check post retrieved is the correct one
+        feed_post = feed.entries[0]
+        self.assertEquals(feed_post.title, post.title)
+        self.assertEquals(feed_post.description, post.text)
