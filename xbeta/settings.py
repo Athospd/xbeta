@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '&2v+81zuku0pffx9+se)q0jl_zaz^-gu7f0$13@q-o$0xm*y%i'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -46,6 +46,7 @@ DEFAULT_APPS = (
 THIRD_PARTY_APPS = (
     'south',
     'twitter_bootstrap',
+    'django_jenkins',
 )
 
 LOCAL_APPS = (
@@ -73,15 +74,18 @@ WSGI_APPLICATION = 'xbeta.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'xbeta',
-        'USER': 'adamiani',
-        'PASSWORD': 'QLg780pd',
+        'ENGINE': '',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
         'HOST': '',
         'PORT': ''
     }
 }
-
+try:
+    from dev_settings import *
+except ImportError:
+    pass
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
@@ -102,3 +106,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 SITE_ID = 1
+
+JENKINS_TASKS = (
+    'django_jenkins.tasks.run_pylint',
+    'django_jenkins.tasks.with_coverage',
+)
+PROJECT_APPS = ['blog']
