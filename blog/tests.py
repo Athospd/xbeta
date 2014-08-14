@@ -527,8 +527,15 @@ class PostViewTest(BaseAcceptanceTest):
         # Check the post title is in the response
         self.assertTrue(post.titulo in response.content)
 
+        # Check the post text is in the response
+        self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
+
         # Check the post category is in the response
         self.assertTrue(post.category.name in response.content)
+
+        # Check the post tag is in the response
+        post_tag = todos_os_posts[0].tags.all()[0]
+        self.assertTrue(post_tag.name.encode() in response.content)
 
         # Check the post date is in the response
         self.assertTrue(str(post.pub_data.year) in response.content)
@@ -544,6 +551,12 @@ class PostViewTest(BaseAcceptanceTest):
         category.name = 'python'
         category.description = 'The Python programming language'
         category.save()
+
+        # Create the tag
+        tag = Tag()
+        tag.name = 'perl'
+        tag.description = 'The Perl programming language'
+        tag.save()
 
         # Create the author
         author = User.objects.create_user('testuser', 'user@example.com', 'password')
@@ -565,6 +578,8 @@ class PostViewTest(BaseAcceptanceTest):
         post.site = site
         post.category = category
         post.save()
+        post.tags.add(tag)
+        post.save()
 
         # Check new post saved
         todos_os_posts = Post.objects.all()
@@ -584,6 +599,10 @@ class PostViewTest(BaseAcceptanceTest):
 
         # Check the post category is in the response
         self.assertTrue(post.category.name in response.content)
+
+        # Check the post tag is in the response
+        post_tag = todos_os_posts[0].tags.all()[0]
+        self.assertTrue(post_tag.name.encode() in response.content)
 
         # Check the post text is in the response
         self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
@@ -639,6 +658,62 @@ class PostViewTest(BaseAcceptanceTest):
 
         # Check the category name is in the response
         self.assertTrue(post.category.name in response.content)
+
+        # Check the post text is in the response
+        self.assertTrue(markdown.markdown(post.texto).encode() in response.content)
+
+        # Check the post date is in the response
+        self.assertTrue(str(post.pub_data.year) in response.content)
+        self.assertTrue(_date(post.pub_data, "F").encode('utf-8') in response.content)
+        self.assertTrue(str(post.pub_data.day) in response.content)
+
+        # Check the link is marked up properly
+        self.assertTrue('<a href="http://127.0.0.1:8000/">my first blog post</a>' in response.content)
+
+    def test_tag_page(self):
+        # Create the tag
+        tag = Tag()
+        tag.name = 'python'
+        tag.description = 'The Python programming language'
+        tag.save()
+
+        # Create the author
+        author = User.objects.create_user('testuser', 'user@example.com', 'password')
+        author.save()
+
+        # Create the site
+        site = Site()
+        site.name = 'example.com'
+        site.domain = 'example.com'
+        site.save()
+
+        # Create the post
+        post = Post()
+        post.titulo = 'My first post'
+        post.texto = 'This is [my first blog post](http://127.0.0.1:8000/)'
+        post.slug = 'my-first-post'
+        post.pub_data = timezone.now()
+        post.author = author
+        post.site = site
+        post.save()
+        post.tags.add(tag)
+        post.save()
+
+        # Check new post saved
+        all_posts = Post.objects.all()
+        self.assertEquals(len(all_posts), 1)
+        only_post = all_posts[0]
+        self.assertEquals(only_post, post)
+
+        # Get the tag URL
+        tag_url = post.tags.all()[0].get_absolute_url()
+
+        # Fetch the tag
+        response = self.client.get(tag_url)
+        self.assertEquals(response.status_code, 200)
+
+        # Check the tag name is in the response
+        self.assertTrue(post.tags.all()[0].name.encode() in response.content)
 
         # Check the post text is in the response
         self.assertTrue(markdown.markdown(post.texto).encode() in response.content)

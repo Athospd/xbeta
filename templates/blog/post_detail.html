@@ -7,10 +7,13 @@
         <h1>{{ object.titulo }}</h1>
         <h3>{{ object.pub_data }}</h3>
         {{ object.texto|custom_markdown }}
-        </div>
         <a href="{{ object.category.get_absolute_url }}">{{ object.category.name }}</a>
+        {% for tag in post.tags.all %}
+        <a href="{{ tag.get_absolute_url }}">{{ tag.name }}</a>
+        {% endfor %}
 
         <h4>Comentários</h4>
         <div class="fb-comments" data-href="http://{{ post.site }}{{ post.get_absolute_url }}" data-width="470" data-num-posts="10"></div>
 
+        </div>
 {% endblock %}
