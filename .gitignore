@@ -1,6 +1,5 @@
 venv/
 *.pyc
-blog/static/bower_components
 xbeta/dev_settings.py
 reports/
 htmlcov/
