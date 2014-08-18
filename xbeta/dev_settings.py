@@ -7,7 +7,7 @@ SECRET_KEY = '&2v+81zuku0pffx9+se)q0jl_zaz^-gu7f0$13@q-o$0xm*y%i'
 #         'ENGINE': 'django.db.backends.mysql',
 #         'NAME': 'xbeta',
 #         'USER': 'adamiani',
-#         'PASSWORD': 'QLg780pd',
+#         'PASSWORD': '',
 #         'HOST': '',
 #         'PORT': ''
 #     }
