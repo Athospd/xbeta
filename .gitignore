@@ -1,6 +1,5 @@
 venv/
 *.pyc
-xbeta/dev_settings.py
 reports/
 htmlcov/
 .coverage
