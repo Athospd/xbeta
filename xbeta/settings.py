@@ -28,7 +28,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-DEFAULT_APPS = (
+INSTALLED_APPS =  (
+    # DEFAULT APPS
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -38,19 +39,13 @@ DEFAULT_APPS = (
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django.contrib.syndication',
-)
-
-THIRD_PARTY_APPS = (
+    # THIRD PARTY APPS
     'south',
     'twitter_bootstrap',
     'django_jenkins',
-)
-
-LOCAL_APPS = (
+    # LOCAL_APPS
     'blog',
 )
-
-INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -108,7 +103,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_URL = '/static/'
+
 
 SITE_ID = 1
 
@@ -131,6 +126,8 @@ ALLOWED_HOSTS = ['*']
 
 # Static asset configuration
 STATIC_ROOT = 'staticfiles'
+
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
