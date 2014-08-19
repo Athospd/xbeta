@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+import settings
 
 from django.contrib import admin
 admin.autodiscover()
@@ -15,4 +16,11 @@ urlpatterns = patterns('',
 
     # Flat pages
     url(r'', include('django.contrib.flatpages.urls')),
+
+    url(r'^static/(?P.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+
+)
+
+urlpatterns += patterns('',
+
 )
