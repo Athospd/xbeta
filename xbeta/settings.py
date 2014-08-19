@@ -103,8 +103,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-
-
 SITE_ID = 1
 
 JENKINS_TASKS = (
@@ -128,6 +126,11 @@ ALLOWED_HOSTS = ['*']
 STATIC_ROOT = 'staticfiles'
 
 STATIC_URL = '/static/'
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+)
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
