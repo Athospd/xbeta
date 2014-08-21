@@ -82,8 +82,12 @@ SECRET_KEY = '&2v+81zuku0pffx9+se)q0jl_zaz^-gu7f0$13@q-o$0xm*y%i'
 # Config do PostgreSQL
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.',
-        'NAME': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'xbeta',
+        'USER': 'adamiani',
+        'PASSWORD': 'QLg780pd',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 # Internationalization
