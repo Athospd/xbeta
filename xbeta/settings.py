@@ -72,7 +72,7 @@ SECRET_KEY = '&2v+81zuku0pffx9+se)q0jl_zaz^-gu7f0$13@q-o$0xm*y%i'
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
 #         'NAME': 'xbeta',
-#         'USER': 'adamiani',
+#         'USER': '',
 #         'PASSWORD': '',
 #         'HOST': '',
 #         'PORT': ''
@@ -84,8 +84,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'xbeta',
-        'USER': 'adamiani',
-        'PASSWORD': 'QLg780pd',
+        'USER': '',
+        'PASSWORD': '',
         'HOST': 'localhost',
         'PORT': '',
     }
