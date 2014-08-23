@@ -366,6 +366,41 @@ class AdminTest(BaseAcceptanceTest):
         all_posts = Post.objects.all()
         self.assertGreater(len(all_posts), 0)
 
+    def test_create_post_without_tag(self):
+        # Create the category
+        category = Category()
+        category.name = 'python'
+        category.description = 'The Python programming language'
+        category.save()
+
+        # Log in
+        self.client.login(username='teste2', password="teste2")
+
+        # Check response code
+        response = self.client.get('/admin/blog/post/add/')
+        self.assertEquals(response.status_code, 200)
+
+        # Create the new post
+        response = self.client.post('/admin/blog/post/add/', {
+            'title': 'My first post',
+            'text': 'This is my first post',
+            'pub_date_0': '2013-12-28',
+            'pub_date_1': '22:00:04',
+            'slug': 'my-first-post',
+            'site': '1',
+            'category': '1'
+        },
+        follow=True
+        )
+        self.assertEquals(response.status_code, 200)
+
+        # Check added successfully
+        self.assertTrue('adicionado com sucesso' in response.content)
+
+        # Check new post now in database
+        all_posts = Post.objects.all()
+        self.assertEquals(len(all_posts), 1)
+
     def test_edit_post(self):
         # Create the category
         category = Category()
@@ -743,6 +778,8 @@ class PostViewTest(BaseAcceptanceTest):
         self.assertEquals(response.status_code, 200)
         self.assertTrue('Nenhuma postagem encontrada!' in response.content)
 
+
+
 class FlatPageViewTest(BaseAcceptanceTest):
     def test_create_flat_page(self):
         # Create flat page
@@ -901,3 +938,4 @@ class FeedTest(BaseAcceptanceTest):
         feed_post = feed.entries[0]
         self.assertEquals(feed_post.title, post.title)
         self.assertEquals(feed_post.description, post.text)
+
