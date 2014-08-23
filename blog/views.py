@@ -25,7 +25,7 @@ class TagListView(ListView):
 class PostsFeed(Feed):
     title = "RSS feed - posts"
     link = "feeds/posts/"
-    description = "RSS feed - blog posts"
+    description = "RSS feed - posts do blog da X Beta"
 
     def items(self):
         return Post.objects.order_by('-pub_date')
