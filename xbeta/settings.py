@@ -39,12 +39,13 @@ INSTALLED_APPS =  (
     'django.contrib.sites',
     'django.contrib.flatpages',
     'django.contrib.syndication',
+    'blog',
     # THIRD PARTY APPS
     'south',
     'twitter_bootstrap',
     'django_jenkins',
     # LOCAL_APPS
-    'blog',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -72,7 +73,7 @@ SECRET_KEY = '&2v+81zuku0pffx9+se)q0jl_zaz^-gu7f0$13@q-o$0xm*y%i'
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
 #         'NAME': 'xbeta',
-#         'USER': '',
+#         'USER': 'adamiani',
 #         'PASSWORD': '',
 #         'HOST': '',
 #         'PORT': ''
@@ -84,8 +85,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'xbeta',
-        'USER': '',
-        'PASSWORD': '',
+        'USER': 'adamiani',
+        'PASSWORD': 'QLg780pd',
         'HOST': 'localhost',
         'PORT': '',
     }
@@ -137,6 +138,5 @@ STATICFILES_FINDERS = (
 )
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'blog/static'),
 )
