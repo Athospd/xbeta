@@ -770,13 +770,13 @@ class PostViewTest(BaseAcceptanceTest):
         category_url = '/category/blah/'
         response = self.client.get(category_url)
         self.assertEquals(response.status_code, 200)
-        self.assertTrue('Nenhuma postagem encontrada!' in response.content)
+        self.assertTrue('Nenhum post encontrado.' in response.content)
 
     def test_nonexistent_tag_page(self):
         tag_url = '/tag/blah/'
         response = self.client.get(tag_url)
         self.assertEquals(response.status_code, 200)
-        self.assertTrue('Nenhuma postagem encontrada!' in response.content)
+        self.assertTrue('Nenhum post encontrado.' in response.content)
 
 
 
