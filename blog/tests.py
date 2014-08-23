@@ -8,7 +8,7 @@ from django.template.defaultfilters import date as _date
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
-import markdown
+import markdown2 as markdown
 import feedparser
 
 class PostTest(TestCase):
